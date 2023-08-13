@@ -1,23 +1,13 @@
 # based_app
 
-A new Flutter project.
+A demo application to show login with MagicAuth platform and retrieve the user token balance for Based App.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+Here is the demonstration for the application demo.
 
-A few resources to get you started if this is your first Flutter project:
+## DEMO
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+![Demo](https://github.com/WeiJun0507/based_app_demo/blob/master/based_app_screen_record.mp4)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
-# TODO
-
-1. Add Toast Message
-2. Add SharedPreferences to maintain login state
-3. Calculate Safe Address
-4. Logout
+![Demo](repo_asset/based_app_screen_record.mp4)
