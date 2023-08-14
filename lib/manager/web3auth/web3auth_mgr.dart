@@ -52,7 +52,7 @@ class MagicAuthMgr {
     if (Platform.isAndroid) {
       redirectUrl = 'magic.link.basedapp://';
     } else {
-      redirectUrl = 'com.example.based_app://openlogin';
+      redirectUrl = 'magic.link.basedapp://';
     }
 
     try {
