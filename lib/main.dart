@@ -31,12 +31,7 @@ class MyApp extends StatelessWidget {
       ),
       builder: BotToastInit(),
       navigatorObservers: [BotToastNavigatorObserver()],
-      home: Stack(
-        children: <Widget>[
-          const SplashScreen(),
-          Magic.instance.relayer,
-        ],
-      ),
+      home: const SplashScreen(),
     );
   }
 }
