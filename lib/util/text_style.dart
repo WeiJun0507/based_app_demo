@@ -133,6 +133,7 @@ class StText extends StatelessWidget {
 }
 
 getShortFormText(String text) {
+  if (text.isEmpty) return "";
   List<String> splittedText = text.split(' ');
   if (splittedText.length > 1) {
     return splittedText[0][0] + splittedText[1][0];

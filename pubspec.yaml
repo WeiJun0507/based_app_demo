@@ -35,7 +35,7 @@ dependencies:
 
 #  web3auth_flutter: ^2.0.3
 
-  magic_sdk: ^4.0.0
+  magic_sdk: ^4.1.0
   magic_ext_oauth: ^0.3.4
 
   http: ^0.13.5

@@ -56,6 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorPlate.black,
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: ColorPlate.black,
         elevation: 1.1,

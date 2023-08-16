@@ -26,6 +26,7 @@ class User {
   bool? emailVerified;
 
   // OpenIDConnectPhone
+  String? countryCode;
   String? phoneNumber;
   bool? phoneNumberVerified;
 

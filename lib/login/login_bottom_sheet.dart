@@ -38,7 +38,6 @@ class _LoginBottomSheetState extends State<LoginBottomSheet> {
   }
 
   void prepareLogin(BuildContext context, String loginType) async {
-    Toast.show();
     switch (loginType) {
       case 'phoneOrEmail':
         final inputText = _emailPhoneController.text;
@@ -48,17 +47,33 @@ class _LoginBottomSheetState extends State<LoginBottomSheet> {
             'type': MagicAuthRequestEnum.email,
             'data': inputText,
           });
-        } else {
+        } else if (validateUserPhone(inputText)) {
           request = MagicAuthRequest.fromJson({
             'type': MagicAuthRequestEnum.phone,
             'data': inputText,
           });
+        } else {
+          Toast.showToast('Please enter a valid email or phone number');
+          return;
         }
 
         final token = await objectMgr.magicAuthMgr.init(request);
-        Toast.hide();
+
+        if (token && objectMgr.userMgr.isLoggedIn) {
+          if (mounted) {
+            Navigator.of(context).pop();
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => const HomeScreen(),
+              ),
+            );
+          }
+        } else {
+          Toast.showToast('Login failed. Please try again');
+        }
         break;
       case 'google':
+        Toast.show();
         MagicAuthRequest request = MagicAuthRequest.fromJson({
           'type': MagicAuthRequestEnum.google,
           'data': '',

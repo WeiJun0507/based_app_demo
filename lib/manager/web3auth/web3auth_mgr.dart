@@ -6,16 +6,19 @@ import 'dart:typed_data';
 
 import 'package:based_app/main.dart';
 import 'package:based_app/model/magic_auth/magic_auth_request.dart';
+import 'package:based_app/model/user.dart';
 import 'package:based_app/util/config.dart';
 import 'package:based_app/util/crypto/address.dart';
 import 'package:based_app/util/crypto/data.dart';
 import 'package:based_app/util/crypto/math.dart';
 import 'package:based_app/util/crypto/utf8.dart';
 import 'package:based_app/util/regex.dart';
+import 'package:based_app/util/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:magic_ext_oauth/magic_ext_oauth.dart';
 import 'package:magic_sdk/magic_sdk.dart';
+import 'package:magic_sdk/modules/user/user_response_type.dart';
 import 'package:web3x/crypto.dart';
 import 'package:web3x/web3x.dart';
 
@@ -56,14 +59,7 @@ class MagicAuthMgr {
     }
 
     try {
-      if (request.type == MagicAuthRequestEnum.phone) {
-        final result =
-            await _magic.auth.loginWithSMS(phoneNumber: request.data);
-        return true;
-      } else if (request.type == MagicAuthRequestEnum.email) {
-        final result = await _magic.auth.loginWithEmailOTP(email: request.data);
-        return true;
-      } else if (request.type == MagicAuthRequestEnum.google) {
+      if (request.type == MagicAuthRequestEnum.google) {
         // 这里登陆
         final config = OAuthConfiguration(
           provider: OAuthProvider.GOOGLE,
@@ -89,9 +85,62 @@ class MagicAuthMgr {
         }
 
         return true;
-      } else {
-        // wallet
+      } else if (request.type == MagicAuthRequestEnum.wallet) {
         return false;
+      } else {
+        final String result;
+        Toast.showToast('Login Processing... Please Wait');
+        if (request.type == MagicAuthRequestEnum.phone) {
+          try {
+            result = await _magic.auth.loginWithSMS(phoneNumber: request.data);
+            getCountryCodeFromPhone(request.data);
+            final phoneNumber = request.data.substring(
+                getPhoneNumberExceptCountryCode(request.data)?.start ?? 0);
+            final countryCode = request.data.substring(
+                getCountryCodeFromPhone(request.data)?.start ?? 0,
+                getCountryCodeFromPhone(request.data)?.end);
+            objectMgr.userMgr.setUserInfo({
+              'phoneNumber': phoneNumber.toString(),
+              'countryCode': countryCode.toString(),
+              'name': phoneNumber.toString(),
+            });
+          } catch (e) {
+            debugPrint(e.toString());
+            return false;
+          }
+        } else {
+          try {
+            Toast.hide();
+            result = await _magic.auth.loginWithEmailOTP(email: request.data);
+            objectMgr.userMgr.setUserInfo({
+              'email': request.data.toString(),
+              'name': request.data.toString(),
+            });
+          } catch (e) {
+            debugPrint(e.toString());
+            return false;
+          }
+        }
+        if (result.isNotEmpty) {
+          credential = MagicCredential(Magic.instance.provider);
+          final isLoggedIn = await _magic.user.isLoggedIn();
+          objectMgr.userMgr.setIsLoggedIn(isLoggedIn);
+          objectMgr.prefs.setBool('isLoggedIn', true);
+
+          final address = await credential!.getAccount();
+          objectMgr.userMgr.setUserInfo({
+            'eotAddress': EthereumAddress.fromHex(address.hex),
+          });
+
+          objectMgr.prefs.setString(
+              'userInfo', jsonEncode(objectMgr.userMgr.userInfo!.toJson()));
+
+          objectMgr.cryptoMgr.init();
+
+          return true;
+        } else {
+          return false;
+        }
       }
     } catch (e) {
       debugPrint(e.toString());
